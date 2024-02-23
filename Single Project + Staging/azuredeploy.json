@@ -1,0 +1,410 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "projectName": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "The project name"
+            }
+        },
+        "uniqueReference": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "A unique identifiable reference for this project"
+            }
+        },
+        "sqlServerAdminLogin": {
+            "type": "string",
+            "minLength": 8,
+            "metadata": {
+                "description": "The SQL server admin username."
+            }
+        },
+        "sqlServerAdminLoginPassword": {
+            "type": "securestring",
+            "minLength": 8,
+            "metadata": {
+                "description": "The SQL server admin password (Minimum 8 characters, and at least 3 of the following: Latin uppercase letters (A through Z) Latin lowercase letters (a through z) Base 10 digits (0 through 9) Non-alphanumeric characters such as: exclamation point (!), dollar sign ($), number sign (#), or percent (%).)"
+            }
+        },
+        "sqlDatabaseEdition": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Basic",
+                "Standard",
+                "Premium"
+            ],
+            "metadata": {
+                "description": "The SQL server edition"
+            }
+        },
+        "sqldatabaseRequestedServiceObjectiveName": {
+            "type": "string",
+            "defaultValue": "S2",
+            "allowedValues": [
+                "Basic",
+                "S0",
+                "S1",
+                "S2",
+                "P1",
+                "P2",
+                "P3"
+            ],
+            "metadata": {
+                "description": "Describes the performance level for Edition"
+            }
+        },
+        "webAppSKU": {
+            "type": "string",
+            "defaultValue": "P2V3",
+            "allowedValues": [
+                "P0V3",
+                "P1V3",
+                "P2V3",
+                "P3V3",
+                "B2"
+            ],
+            "metadata": {
+                "description": "The Web App pricing tier"
+            }
+        },
+        "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS"
+            ],
+            "metadata": {
+                "description": "The storage account type"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "applicationName": "[concat(parameters('projectName'), '-', parameters('uniqueReference'))]",
+        "storageAccountName": "[take(replace(toLower(variables('applicationName')), '-', ''), 18)]",
+        "storageAccountNameStaging": "[take(concat(variables('storageAccountName'), 'staging'), 24)]",
+        "storageContainerName": "media",
+        "appserviceName": "[variables('applicationName')]",
+        "webAppName": "[variables('applicationName')]",
+        "sqlServerName": "[concat(variables('applicationName'), '-sqlserver')]",
+        "sqlDatabaseName": "[variables('applicationName')]",
+        "insightsName": "[variables('applicationName')]"
+    },
+    "resources": [
+        {
+            "name": "[variables('sqlServerName')]",
+            "type": "Microsoft.Sql/servers",
+            "location": "[parameters('location')]",
+            "apiVersion": "2022-11-01-preview",
+            "tags": {
+                "projectName": "[parameters('projectName')]",
+                "displayName": "SQL Server",
+                "reference": "[parameters('uniqueReference')]"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('sqlServerAdminLogin')]",
+                "administratorLoginPassword": "[parameters('sqlServerAdminLoginPassword')]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "name": "AllowAllAzureIps",
+                    "type": "firewallrules",
+                    "location": "[parameters('location')]",
+                    "apiVersion": "2022-11-01-preview",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+                    ],
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "0.0.0.0"
+                    }
+                },
+                {
+                    "name": "[variables('sqlDatabaseName')]",
+                    "type": "databases",
+                    "location": "[parameters('location')]",
+                    "apiVersion": "2022-11-01-preview",
+                    "dependsOn": [
+                        "[variables('sqlServerName')]"
+                    ],
+                    "tags": {
+                        "projectName": "[parameters('projectName')]",
+                        "displayName": "SQL Database",
+                        "reference": "[parameters('uniqueReference')]",
+                        "environment": "Production"
+                    },
+                    "properties": {
+                        "collation": "SQL_Latin1_General_CP1_CI_AS",
+                        "edition": "[parameters('sqlDatabaseEdition')]",
+                        "maxSizeBytes": 268435456000,
+                        "requestedServiceObjectiveName": "[parameters('sqldatabaseRequestedServiceObjectiveName')]"
+                    }
+                },
+                {
+                    "name": "[concat(variables('sqlDatabaseName'), '-staging')]",
+                    "type": "databases",
+                    "location": "[parameters('location')]",
+                    "apiVersion": "2022-11-01-preview",
+                    "dependsOn": [
+                        "[variables('sqlServerName')]"
+                    ],
+                    "tags": {
+                        "projectName": "[parameters('projectName')]",
+                        "displayName": "SQL Database",
+                        "reference": "[parameters('uniqueReference')]",
+                        "environment": "Staging"
+                    },
+                    "properties": {
+                        "collation": "SQL_Latin1_General_CP1_CI_AS",
+                        "edition": "[parameters('sqlDatabaseEdition')]",
+                        "maxSizeBytes": 268435456000,
+                        "requestedServiceObjectiveName": "[parameters('sqldatabaseRequestedServiceObjectiveName')]"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "[variables('appserviceName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[parameters('location')]",
+            "apiVersion": "2022-09-01",
+            "tags": {
+                "projectName": "[parameters('projectName')]",
+                "displayName": "App Service Plan",
+                "reference": "[parameters('uniqueReference')]"
+            },
+            "sku": {
+                "name": "[parameters('webAppSKU')]"
+            },
+            "properties": {
+                "name": "[variables('appserviceName')]",
+                "workerSize": 0,
+                "numberOfWorkers": 1
+            }
+        },
+        {
+            "name": "[variables('webAppName')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[parameters('location')]",
+            "apiVersion": "2022-09-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Insights/components/', variables('insightsName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', variables('appserviceName'))]"
+            ],
+            "tags": {
+                "projectName": "[parameters('projectName')]",
+                "displayName": "Web App",
+                "reference": "[parameters('uniqueReference')]",
+                "environment": "Production"
+            },
+            "properties": {
+                "name": "[variables('webAppName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appserviceName'))]"
+            },
+            "resources": [
+                {
+                    "name": "appsettings",
+                    "type": "config",
+                    "apiVersion": "2022-09-01",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', variables('webAppName'))]"
+                    ],
+                    "properties": {
+                        "Umbraco__CMS__Global__MainDomLock": "FileSystemMainDomLock",
+                        "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
+                        "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory"
+                    }
+                },
+                {
+                    "apiVersion": "2022-09-01",
+                    "name": "web",
+                    "type": "config",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', variables('webAppName'))]"
+                    ],
+                    "properties": {
+                        "minTlsVersion": "1.2",
+                        "http20Enabled": true,
+                        "ftpsState": "Disabled",
+                        "phpVersion": "off",
+                        "netFrameworkVersion": "v6.0",
+                        "use32BitWorkerProcess": "false",
+                        "webSocketsEnabled": true,
+                        "alwaysOn": "true",
+                        "httpLoggingEnabled": true,
+                        "logsDirectorySizeLimit": 40
+                    }
+                }
+            ]
+        },
+        {
+            "name": "[concat(variables('webAppName'), '-staging')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[parameters('location')]",
+            "apiVersion": "2022-09-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Insights/components/', variables('insightsName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', variables('appserviceName'))]"
+            ],
+            "tags": {
+                "projectName": "[parameters('projectName')]",
+                "displayName": "Web App",
+                "reference": "[parameters('uniqueReference')]",
+                "environment": "Staging"
+            },
+            "properties": {
+                "name": "[concat(variables('webAppName'), '-staging')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appserviceName'))]"
+            },
+            "resources": [
+                {
+                    "name": "appsettings",
+                    "type": "config",
+                    "apiVersion": "2022-09-01",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', concat(variables('webAppName'), '-staging'))]"
+                    ],
+                    "properties": {
+                        "Umbraco__CMS__Global__MainDomLock": "FileSystemMainDomLock",
+                        "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
+                        "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory"
+                    }
+                },
+                {
+                    "apiVersion": "2022-09-01",
+                    "name": "web",
+                    "type": "config",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', concat(variables('webAppName'), '-staging'))]"
+                    ],
+                    "properties": {
+                        "minTlsVersion": "1.2",
+                        "http20Enabled": true,
+                        "ftpsState": "Disabled",
+                        "phpVersion": "off",
+                        "netFrameworkVersion": "v6.0",
+                        "use32BitWorkerProcess": "false",
+                        "webSocketsEnabled": true,
+                        "alwaysOn": "true",
+                        "httpLoggingEnabled": true,
+                        "logsDirectorySizeLimit": 40
+                    }
+                }
+            ]
+        },
+        {
+            "name": "[variables('storageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "location": "[parameters('location')]",
+            "apiVersion": "2023-01-01",
+            "kind": "StorageV2",
+            "tags": {
+                "projectName": "[parameters('projectName')]",
+                "displayName": "Storage Account",
+                "reference": "[parameters('uniqueReference')]",
+                "environment": "Production"
+            },
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            },
+            "properties": {
+                "allowBlobPublicAccess": true
+            },
+            "resources": [
+                {
+                    "name": "[concat('default/', variables('storageContainerName'))]",
+                    "type": "blobServices/containers",
+                    "apiVersion": "2023-01-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                    ],
+                    "properties": {
+                        "publicAccess": "Blob"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "[variables('storageAccountNameStaging')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "location": "[parameters('location')]",
+            "apiVersion": "2023-01-01",
+            "kind": "StorageV2",
+            "tags": {
+                "projectName": "[parameters('projectName')]",
+                "displayName": "Storage Account",
+                "reference": "[parameters('uniqueReference')]",
+                "environment": "Staging"
+            },
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            },
+            "properties": {
+                "allowBlobPublicAccess": true
+            },
+            "resources": [
+                {
+                    "name": "[concat('default/', variables('storageContainerName'))]",
+                    "type": "blobServices/containers",
+                    "apiVersion": "2023-01-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountNameStaging'))]"
+                    ],
+                    "properties": {
+                        "publicAccess": "Blob"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "[variables('insightsName')]",
+            "type": "Microsoft.Insights/components",
+            "location": "[parameters('location')]",
+            "kind": "",
+            "apiVersion": "2020-02-02-preview",
+            "dependsOn": [
+            ],
+            "tags": {
+                "projectName": "[parameters('projectName')]",
+                "displayName": "Application Insights",
+                "reference": "[parameters('uniqueReference')]",
+                "environment": "Production"
+            },
+            "properties": {
+                "applicationId": "[variables('webAppName')]",
+                "Application_Type": "web"
+            }
+        },
+        {
+            "name": "[concat(variables('insightsName'), '-staging')]",
+            "type": "Microsoft.Insights/components",
+            "location": "[parameters('location')]",
+            "kind": "",
+            "apiVersion": "2020-02-02-preview",
+            "dependsOn": [
+            ],
+            "tags": {
+                "projectName": "[parameters('projectName')]",
+                "displayName": "Application Insights",
+                "reference": "[parameters('uniqueReference')]",
+                "environment":"Staging"
+            },
+            "properties": {
+                "applicationId": "[concat(variables('webAppName'), '-staging')]",
+                "Application_Type": "web"
+            }
+        }
+    ]
+}
