@@ -25,3 +25,14 @@ This template provisions a Web App, a SQL Database, Blob Storage and Application
 This template provisions a Web App, a SQL Database, Blob Storage and Application Insights with a staging environment provisioned to an existing SQL Server and App Service Plan.
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMoriyama-Umbraco%2FUmbraco-ARM-Templates%2Fmain%2FSingle%2520Project%2520%252B%2520Staging%2520-%2520Existing%2520Resources%2Fazuredeploy.json)
+
+## Web App with a SQL Database, Blob and Application Insights with Editorial and Staging environments
+This template provisions a Web App, a SQL Database, Blob Storage and Application Insights with editorial and staging environments.
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMoriyama-Umbraco%2FUmbraco-ARM-Templates%2Fmain%2FSingle%20Project%20%2B%20Editorial%20%2B%20Staging%2Fazuredeploy.json)
+
+
+## Web App with a SQL Database, Blob and Application Insights with Editorial and Staging environments provisioned to an existing SQL Server and App Service Plan
+This template provisions a Web App, a SQL Database, Blob Storage and Application Insights with editorial and staging environments provisioned to an existing SQL Server and App Service Plan.
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FMoriyama-Umbraco%2FUmbraco-ARM-Templates%2Fmain%2FSingle%20Project%20%2B%20Editorial%20%2B%20Staging%20-%20Existing%20Resources%2Fazuredeploy.json)
