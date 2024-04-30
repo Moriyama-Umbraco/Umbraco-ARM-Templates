@@ -215,7 +215,7 @@
                     "name": "web",
                     "type": "config",
                     "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', concat(variables('webAppName'), '-staging'))]"
+                        "[concat('Microsoft.Web/sites/', concat(variables('webAppName'), '-editorial'))]"
                     ],
                     "properties": {
                         "minTlsVersion": "1.2",
