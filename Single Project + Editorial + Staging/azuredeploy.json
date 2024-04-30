@@ -245,8 +245,7 @@
                         "webSocketsEnabled": true,
                         "alwaysOn": "true",
                         "httpLoggingEnabled": true,
-                        "logsDirectorySizeLimit": 40,
-                        "httpsOnly": true
+                        "logsDirectorySizeLimit": 40
                     }
                 }
             ]
