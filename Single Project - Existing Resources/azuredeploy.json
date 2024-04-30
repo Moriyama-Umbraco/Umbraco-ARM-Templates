@@ -119,7 +119,8 @@
             },
             "properties": {
                 "name": "[variables('webAppName')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
+                "httpsOnly": true
             },
             "resources": [
                 {
