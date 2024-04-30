@@ -211,7 +211,8 @@
             },
             "properties": {
                 "name": "[variables('webAppName')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appserviceName'))]"
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appserviceName'))]",
+                "httpsOnly": true
             },
             "resources": [
                 {
@@ -267,7 +268,8 @@
             },
             "properties": {
                 "name": "[concat(variables('webAppName'), '-editorial')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appserviceName'))]"
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appserviceName'))]",
+                "httpsOnly": true
             },
             "resources": [
                 {
@@ -313,7 +315,8 @@
             "apiVersion": "2022-09-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Insights/components/', variables('insightsName'))]",
-                "[resourceId('Microsoft.Web/serverfarms', variables('appserviceName'))]"
+                "[resourceId('Microsoft.Web/serverfarms', variables('appserviceName'))]",
+                "httpsOnly": true
             ],
             "tags": {
                 "projectName": "[parameters('projectName')]",
