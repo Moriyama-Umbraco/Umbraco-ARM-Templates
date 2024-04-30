@@ -244,7 +244,8 @@
                         "webSocketsEnabled": true,
                         "alwaysOn": "true",
                         "httpLoggingEnabled": true,
-                        "logsDirectorySizeLimit": 40
+                        "logsDirectorySizeLimit": 40,
+                        "httpsOnly": true
                     }
                 }
             ]
@@ -299,7 +300,8 @@
                         "webSocketsEnabled": true,
                         "alwaysOn": "true",
                         "httpLoggingEnabled": true,
-                        "logsDirectorySizeLimit": 40
+                        "logsDirectorySizeLimit": 40,
+                        "httpsOnly": true
                     }
                 }
             ]
