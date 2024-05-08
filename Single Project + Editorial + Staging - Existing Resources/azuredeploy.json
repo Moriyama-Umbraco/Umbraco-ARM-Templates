@@ -82,6 +82,7 @@
     "variables": {
         "applicationName": "[concat(parameters('projectName'), '-', parameters('uniqueReference'))]",
         "storageAccountName": "[take(replace(toLower(variables('applicationName')), '-', ''), 18)]",
+        "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "storageContainerName": "media",
         "webAppName": "[variables('applicationName')]",
         "sqlDatabaseName": "[variables('applicationName')]",
@@ -190,7 +191,7 @@
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
                         "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
                         "Umbraco__Storage__AzureBlob__Media__ContainerName": "[variables('storageContainerName')]",
-                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').value[0].connectionString]",
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
                         "umbracoDbDSN": {
                             "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',variables('sqlDatabaseName'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
                             "type": "SQLServer"
@@ -253,7 +254,7 @@
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
                         "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
                         "Umbraco__Storage__AzureBlob__Media__ContainerName": "[concat(variables('storageContainerName'), '-editorial')]",
-                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').value[0].connectionString]",
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
                         "umbracoDbDSN": {
                             "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',concat(variables('sqlDatabaseName'), '-editorial'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
                             "type": "SQLServer"
@@ -316,7 +317,7 @@
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
                         "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
                         "Umbraco__Storage__AzureBlob__Media__ContainerName": "[concat(variables('storageContainerName'), '-staging')]",
-                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').value[0].connectionString]",
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
                         "umbracoDbDSN": {
                             "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',concat(variables('sqlDatabaseName'), '-staging'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
                             "type": "SQLServer"
