@@ -261,11 +261,7 @@
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
                         "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
                         "Umbraco__Storage__AzureBlob__Media__ContainerName": "[variables('storageContainerName')]",
-                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').keys[0].value)]",
-                        "umbracoDbDSN": {
-                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',variables('sqlDatabaseName'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
-                            "type": "SQLServer"
-                        }
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').keys[0].value)]"
                     }
                 },
                 {
@@ -286,6 +282,22 @@
                         "alwaysOn": "true",
                         "httpLoggingEnabled": true,
                         "logsDirectorySizeLimit": 40
+                    }
+                },
+                {
+                    "type": "config",
+                    "apiVersion": "2022-09-01",
+                    "name": "connectionstrings",
+                    "kind": "string",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', variables('webAppName'))]",
+                        "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+                    ],
+                    "properties": {
+                        "umbracoDbDSN": {
+                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',variables('sqlDatabaseName'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
+                            "type": "SQLServer"
+                        }
                     }
                 }
             ]
@@ -324,11 +336,7 @@
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
                         "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
                         "Umbraco__Storage__AzureBlob__Media__ContainerName": "[concat(variables('storageContainerName'), '-editorial')]",
-                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').keys[0].value)]",
-                        "umbracoDbDSN": {
-                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',concat(variables('sqlDatabaseName'), '-editorial'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
-                            "type": "SQLServer"
-                        }
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').keys[0].value)]"
                     }
                 },
                 {
@@ -349,6 +357,22 @@
                         "alwaysOn": "true",
                         "httpLoggingEnabled": true,
                         "logsDirectorySizeLimit": 40
+                    }
+                },
+                {
+                    "type": "config",
+                    "apiVersion": "2022-09-01",
+                    "name": "connectionstrings",
+                    "kind": "string",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', concat(variables('webAppName'), '-editorial'))]",
+                        "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+                    ],
+                    "properties": {
+                        "umbracoDbDSN": {
+                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',concat(variables('sqlDatabaseName'), '-editorial'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
+                            "type": "SQLServer"
+                        }
                     }
                 }
             ]
@@ -387,11 +411,7 @@
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
                         "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
                         "Umbraco__Storage__AzureBlob__Media__ContainerName": "[concat(variables('storageContainerName'), '-staging')]",
-                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').keys[0].value)]",
-                        "umbracoDbDSN": {
-                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',concat(variables('sqlDatabaseName'), '-staging'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
-                            "type": "SQLServer"
-                        }
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').keys[0].value)]"
                     }
                 },
                 {
@@ -412,6 +432,22 @@
                         "alwaysOn": "true",
                         "httpLoggingEnabled": true,
                         "logsDirectorySizeLimit": 40
+                    }
+                },
+                {
+                    "type": "config",
+                    "apiVersion": "2022-09-01",
+                    "name": "connectionstrings",
+                    "kind": "string",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', concat(variables('webAppName'), '-staging'))]",
+                        "[resourceId('Microsoft.Sql/servers', variables('sqlServerName'))]"
+                    ],
+                    "properties": {
+                        "umbracoDbDSN": {
+                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',concat(variables('sqlDatabaseName'), '-staging'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
+                            "type": "SQLServer"
+                        }
                     }
                 }
             ]

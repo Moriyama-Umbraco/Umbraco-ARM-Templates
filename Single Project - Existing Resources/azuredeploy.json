@@ -150,11 +150,7 @@
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
                         "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
                         "Umbraco__Storage__AzureBlob__Media__ContainerName": "[variables('storageContainerName')]",
-                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
-                        "umbracoDbDSN": {
-                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',variables('sqlDatabaseName'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
-                            "type": "SQLServer"
-                        }
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]"
                     }
                 },
                 {
@@ -176,6 +172,22 @@
                         "httpLoggingEnabled": true,
                         "logsDirectorySizeLimit": 40,
                         "httpsOnly": true
+                    }
+                },
+                {
+                    "type": "config",
+                    "apiVersion": "2022-09-01",
+                    "name": "connectionstrings",
+                    "kind": "string",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', variables('webAppName'))]",
+                        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+                    ],
+                    "properties": {
+                        "umbracoDbDSN": {
+                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',variables('sqlDatabaseName'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
+                            "type": "SQLServer"
+                        }
                     }
                 }
             ]
