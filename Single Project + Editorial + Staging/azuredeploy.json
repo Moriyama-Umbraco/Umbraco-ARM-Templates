@@ -97,7 +97,6 @@
         "applicationName": "[concat(parameters('projectName'), '-', parameters('uniqueReference'))]",
         "storageAccountName": "[take(replace(toLower(variables('applicationName')), '-', ''), 18)]",
         "storageContainerName": "media",
-        "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "appserviceName": "[variables('applicationName')]",
         "webAppName": "[variables('applicationName')]",
         "sqlServerName": "[concat(variables('applicationName'), '-sqlserver')]",
@@ -262,7 +261,7 @@
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
                         "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
                         "Umbraco__Storage__AzureBlob__Media__ContainerName": "[variables('storageContainerName')]",
-                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').keys[0].value)]",
                         "umbracoDbDSN": {
                             "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',variables('sqlDatabaseName'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
                             "type": "SQLServer"
@@ -325,7 +324,7 @@
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
                         "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
                         "Umbraco__Storage__AzureBlob__Media__ContainerName": "[concat(variables('storageContainerName'), '-editorial')]",
-                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').keys[0].value)]",
                         "umbracoDbDSN": {
                             "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',concat(variables('sqlDatabaseName'), '-editorial'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
                             "type": "SQLServer"
@@ -388,7 +387,7 @@
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
                         "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
                         "Umbraco__Storage__AzureBlob__Media__ContainerName": "[concat(variables('storageContainerName'), '-staging')]",
-                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]",
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').keys[0].value)]",
                         "umbracoDbDSN": {
                             "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', variables('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',concat(variables('sqlDatabaseName'), '-staging'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
                             "type": "SQLServer"
