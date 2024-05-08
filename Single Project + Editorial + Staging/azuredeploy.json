@@ -303,6 +303,27 @@
                         "httpLoggingEnabled": true,
                         "logsDirectorySizeLimit": 40
                     }
+                },
+                {
+                    "name": "[concat(variables('sqlDatabaseName'), '-editorial')]",
+                    "type": "databases",
+                    "location": "[parameters('location')]",
+                    "apiVersion": "2022-11-01-preview",
+                    "dependsOn": [
+                        "[variables('sqlServerName')]"
+                    ],
+                    "tags": {
+                        "projectName": "[parameters('projectName')]",
+                        "displayName": "SQL Database",
+                        "reference": "[parameters('uniqueReference')]",
+                        "environment": "Editorial"
+                    },
+                    "properties": {
+                        "collation": "SQL_Latin1_General_CP1_CI_AS",
+                        "edition": "[parameters('sqlDatabaseEdition')]",
+                        "maxSizeBytes": 268435456000,
+                        "requestedServiceObjectiveName": "[parameters('sqldatabaseRequestedServiceObjectiveName')]"
+                    }
                 }
             ]
         },
