@@ -74,6 +74,9 @@
             "metadata": {
                 "description": "Location for all resources."
             }
+        },
+        "ownerTagValue": {
+            "type": "string"
         }
     },
     "variables": {
@@ -86,6 +89,16 @@
         "insightsName": "[variables('applicationName')]"
     },
     "resources": [
+        {
+            "type": "Microsoft.Resources/tags",
+            "name": "default",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "tags": {
+                "Owner": "[parameters('ownerTagValue')]"
+                }
+            }
+        },
         {
             "name": "[concat(parameters('sqlServerName'),'/', variables('sqlDatabaseName'))]",
             "type": "Microsoft.Sql/servers/databases",
