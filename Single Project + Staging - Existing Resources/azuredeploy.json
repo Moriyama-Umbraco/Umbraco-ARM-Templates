@@ -82,7 +82,6 @@
     "variables": {
         "applicationName": "[concat(parameters('projectName'), '-', parameters('uniqueReference'))]",
         "storageAccountName": "[take(replace(toLower(variables('applicationName')), '-', ''), 18)]",
-        "storageAccountNameStaging": "[take(concat(variables('storageAccountName'), 'staging'), 24)]",
         "storageContainerName": "media",
         "webAppName": "[variables('applicationName')]",
         "sqlDatabaseName": "[variables('applicationName')]",
@@ -162,12 +161,19 @@
                     "type": "config",
                     "apiVersion": "2022-09-01",
                     "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', variables('webAppName'))]"
+                        "[concat('Microsoft.Web/sites/', variables('webAppName'))]",
+                        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
                     ],
                     "properties": {
                         "Umbraco__CMS__Global__MainDomLock": "FileSystemMainDomLock",
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
-                        "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory"
+                        "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
+                        "Umbraco__Storage__AzureBlob__Media__ContainerName": "[variables('storageContainerName')]",
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').value[0].connectionString]",
+                        "umbracoDbDSN": {
+                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',variables('sqlDatabaseName'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
+                            "type": "SQLServer"
+                        }
                     }
                 },
                 {
@@ -218,12 +224,19 @@
                     "type": "config",
                     "apiVersion": "2022-09-01",
                     "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', concat(variables('webAppName'), '-staging'))]"
+                        "[concat('Microsoft.Web/sites/', concat(variables('webAppName'), '-staging'))]",
+                        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
                     ],
                     "properties": {
                         "Umbraco__CMS__Global__MainDomLock": "FileSystemMainDomLock",
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
-                        "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory"
+                        "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
+                        "Umbraco__Storage__AzureBlob__Media__ContainerName": "[concat(variables('storageContainerName'), '-staging')]",
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').value[0].connectionString]",
+                        "umbracoDbDSN": {
+                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',concat(variables('sqlDatabaseName'), '-staging'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
+                            "type": "SQLServer"
+                        }
                     }
                 },
                 {
@@ -277,34 +290,13 @@
                     "properties": {
                         "publicAccess": "Blob"
                     }
-                }
-            ]
-        },
-        {
-            "name": "[variables('storageAccountNameStaging')]",
-            "type": "Microsoft.Storage/storageAccounts",
-            "location": "[parameters('location')]",
-            "apiVersion": "2023-01-01",
-            "kind": "StorageV2",
-            "tags": {
-                "projectName": "[parameters('projectName')]",
-                "displayName": "Storage Account",
-                "reference": "[parameters('uniqueReference')]",
-                "environment": "Staging"
-            },
-            "sku": {
-                "name": "[parameters('storageAccountType')]"
-            },
-            "properties": {
-                "allowBlobPublicAccess": true
-            },
-            "resources": [
+                },
                 {
-                    "name": "[concat('default/', variables('storageContainerName'))]",
+                    "name": "[concat('default/', variables('storageContainerName'), '-staging')]",
                     "type": "blobServices/containers",
                     "apiVersion": "2023-01-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountNameStaging'))]"
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
                     ],
                     "properties": {
                         "publicAccess": "Blob"

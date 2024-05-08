@@ -141,12 +141,19 @@
                     "type": "config",
                     "apiVersion": "2022-09-01",
                     "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', variables('webAppName'))]"
+                        "[concat('Microsoft.Web/sites/', variables('webAppName'))]",
+                        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
                     ],
                     "properties": {
                         "Umbraco__CMS__Global__MainDomLock": "FileSystemMainDomLock",
                         "Umbraco__CMS__Hosting__LocalTempStorageLocation": "EnvironmentTemp",
-                        "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory"
+                        "Umbraco__CMS__Examine__LuceneDirectoryFactory": "SyncedTempFileSystemDirectoryFactory",
+                        "Umbraco__Storage__AzureBlob__Media__ContainerName": "[variables('storageContainerName')]",
+                        "Umbraco__Storage__AzureBlob__Media__ConnectionString": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2022-09-01').value[0].connectionString]",
+                        "umbracoDbDSN": {
+                            "value": "[concat('Data Source=',reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName,';Initial Catalog=',variables('sqlDatabaseName'),';UID=USERCHANGEME;pwd=PASSWORDCHANGEME')]",
+                            "type": "SQLServer"
+                        }
                     }
                 },
                 {
