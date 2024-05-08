@@ -13,6 +13,9 @@
         },
         "sqlServerName": {
             "value": ""
+        },
+        "ownerTagValue": {
+            "value": ""
         }
     }
 }

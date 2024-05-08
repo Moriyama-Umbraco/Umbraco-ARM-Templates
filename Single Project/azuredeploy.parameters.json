@@ -13,6 +13,9 @@
         },
         "sqlServerAdminLoginPassword": {
             "value": "GEN-PASSWORD"
+        },
+        "ownerTagValue": {
+            "value": ""
         }
     }
 }
